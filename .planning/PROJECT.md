@@ -50,6 +50,8 @@ Users can systematically organize their YouTube learning resources, track what t
 | SQLite for local storage | Simple, no server needed, good for single user | — Pending |
 | Web + mobile responsive | Cover both use cases with single codebase | — Pending |
 | Custom categories (not YouTube tags) | More flexible for personal organization | — Pending |
+| React 19 + Vite + TypeScript | User preference for stack during discuss-phase | — Pending |
+| Tailwind CSS + Zod + Axios | User preference during discuss-phase | — Pending |
 
 ---
 *Last updated: 2026-04-10 after initialization*
