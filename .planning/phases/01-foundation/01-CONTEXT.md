@@ -22,41 +22,62 @@ This phase establishes the foundation for all subsequent phases — both project
 ### Tech Stack (Backend)
 - **D-01:** FastAPI — Web framework
 - **D-02:** SQLite — Database
-- **D-03:** SQLModel — ORM (SQLAlchemy-based)
+- **D-03:** SQLModel — ORM with BaseModel inheritance
 - **D-04:** asyncio — Async support
-- **D-05:** CORS — Cross-origin resource sharing
-- **D-06:** Pydantic — Data validation
+- **D-05:** APIRoute — Async route handlers
+- **D-06:** CORS — Cross-origin resource sharing
+- **D-07:** Pydantic — Data validation (BaseModel)
+- **D-08:** Middleware — Request/Response logging, Error handling
 
 ### Tech Stack (Frontend)
-- **D-07:** React 19 + Vite + TypeScript frontend
-- **D-08:** Tailwind CSS for styling
-- **D-09:** Axios for HTTP requests
+- **D-09:** React — UI framework
+- **D-10:** Vite — Build tool
+- **D-11:** TypeScript — Type safety
+- **D-12:** Axios — HTTP client
+- **D-13:** Zod — Validation schema
+- **D-14:** Zustand — State management
+- **D-15:** React Context — Local state
 
 ### Repository Pattern (Backend)
-- **D-10:** SQLModel BaseModel inheritance for all models
-- **D-11:** Separate repositories for each entity — VideoRepository, CategoryRepository
+- **D-16:** SQLModel BaseModel inheritance for all models
+- **D-17:** Separate repositories — VideoRepository, CategoryRepository
 - Repository inherits from base repository class
 
-### Middleware (Backend)
-- **D-12:** CORS middleware enabled
-- **D-13:** Request/Response middleware logging
-- **D-14:** Error handling middleware
+### MVP Scope
+- **D-18:** Minimum viable product for Phase 1:
+  - Backend: FastAPI server running with basic CRUD
+  - Frontend: Basic UI skeleton connecting to API
 
 ### Project Structure
-- **D-15:** /backend - FastAPI project with repository layer
-- **D-16:** /frontend - React project with components
+- **D-19:** /backend - FastAPI project
+  - main.py (app entry)
+  - models/ (SQLModel models)
+  - repositories/ (data access)
+  - routers/ (API routes)
+  - schemas/ (Pydantic schemas)
+  - middleware/ (CORS, logging, error)
+- **D-20:** /frontend - React project
+  - src/components/
+  - src/hooks/
+  - src/store/ (Zustand)
+  - src/api/ (Axios)
+  - src/context/
 
 ### Database Schema
-- **D-17:** Simple schema:
+- **D-21:** Simple schema:
   - videos: id, url, title, channel, duration, thumbnail, watched, created
   - categories: id, name, type (major/minor)
   - video_categories (junction table)
-- **D-18:** SQLite database in /backend/data/
+- **D-22:** SQLite database in /backend/data/
+
+### API Endpoints (MVP)
+- **D-23:** Videos: GET /videos, POST /videos, PUT /videos/{id}, DELETE /videos/{id}
+- **D-24:** Categories: GET /categories, POST /categories, PUT /categories/{id}, DELETE /categories/{id}
 
 ### the agent's Discretion
 - Exact file structure within /backend/
 - Exact file structure within /frontend/
-- API endpoint conventions
+- API endpoint naming conventions
 - Component naming patterns
 
 </decisions>
