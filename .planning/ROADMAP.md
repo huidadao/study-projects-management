@@ -45,12 +45,15 @@ A web application for organizing YouTube learning videos with custom categories,
   4. User can add timestamped notes to videos
   5. User can search videos by title, channel, notes
   6. Dashboard displays videos with status and categories
-**Plans**: 3 plans
+**Plans**: 6 plans (3 original + 3 gap closure)
 
 **Plan list:**
 - [x] 02-01-PLAN.md — Backend API extensions (Notes, Search, Watched Toggle)
 - [x] 02-02-PLAN.md — Dashboard UI (Video Grid, SearchBar, CategorySidebar, QuickAdd)
-- [ ] 02-03-PLAN.md — Notes Modal with YouTube timestamp integration
+- [x] 02-03-PLAN.md — Notes Modal with YouTube timestamp integration
+- [x] 02-04-PLAN.md — [GAP] Fix HttpUrl binding (video creation)
+- [x] 02-05-PLAN.md — [GAP] Fix search route ordering
+- [x] 02-06-PLAN.md — [GAP] Implement category filter with join table
 
 ### Phase 3: Study Schedule
 **Goal**: Watch scheduling, progress tracking, and schedule-aware dashboard
