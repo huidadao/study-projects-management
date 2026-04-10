@@ -14,8 +14,9 @@ engine = create_engine(DATABASE_URL, echo=False)
 app = FastAPI(
     title="YouTube Study Manager API",
     description="API for managing YouTube videos and study categories",
-    version="1.0.0"
+    version="1.0.0",
 )
+
 
 # Create tables on startup
 @app.on_event("startup")
@@ -23,7 +24,10 @@ def create_tables():
     from models.video import Video
     from models.category import Category
     from models.note import Note
+    from models.schedule import Schedule, ScheduleCompletion
+
     SQLModel.metadata.create_all(engine)
+
 
 # CORS middleware - allow frontend origin
 app.add_middleware(
@@ -38,10 +42,7 @@ app.add_middleware(
 # Error handling middleware
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(
-        status_code=500,
-        content={"error": str(exc)}
-    )
+    return JSONResponse(status_code=500, content={"error": str(exc)})
 
 
 # Health check endpoint
@@ -51,8 +52,12 @@ async def root():
 
 
 # Import and include routers
-from routers import videos, categories, notes
+from routers.videos import router as videos_router
+from routers.categories import router as categories_router
+from routers.notes import router as notes_router
+from routers.schedules import router as schedules_router
 
-app.include_router(videos.router, prefix="/api/videos", tags=["videos"])
-app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
-app.include_router(notes.router, prefix="/api/notes", tags=["notes"])
+app.include_router(videos_router, prefix="/api/videos", tags=["videos"])
+app.include_router(categories_router, prefix="/api/categories", tags=["categories"])
+app.include_router(notes_router, prefix="/api/notes", tags=["notes"])
+app.include_router(schedules_router, prefix="/api/schedules", tags=["schedules"])
