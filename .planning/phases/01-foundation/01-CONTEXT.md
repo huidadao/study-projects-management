@@ -6,7 +6,13 @@
 <domain>
 ## Phase Boundary
 
-Project scaffolding with React + TypeScript + SQLite database, repository layer, and basic UI skeleton. This phase establishes the foundation for all subsequent phases — project setup, database initialization, and data access patterns.
+Project scaffolding with:
+- Backend: FastAPI (Python) + SQLite in /backend
+- Frontend: React + Vite + TypeScript in /frontend
+- Repository layer in backend
+- Basic UI skeleton
+
+This phase establishes the foundation for all subsequent phases — both projects setup, database, and API patterns.
 
 </domain>
 
@@ -14,40 +20,39 @@ Project scaffolding with React + TypeScript + SQLite database, repository layer,
 ## Implementation Decisions
 
 ### Tech Stack
-- **D-01:** React 19 + Vite + TypeScript — User chose React over Vue (based on their preference)
-- **D-02:** Tailwind CSS for styling
-- **D-03:** Zod for validation
-- **D-04:** Axios for HTTP requests
-- **D-05:** sql.js (SQLite in browser) + idb (IndexedDB wrapper) for persistence
-- **D-06:** React Router for navigation
+- **D-01:** FastAPI (Python) backend with SQLite — API layer
+- **D-02:** React 19 + Vite + TypeScript frontend — User requested separation
+- **D-03:** Tailwind CSS for frontend styling
+- **D-04:** SQLAlchemy for backend ORM
+- **D-05:** Pydantic for backend validation
 
-### Repository Pattern
-- **D-07:** Separate repositories for each entity — VideoRepository, CategoryRepository
-- Better organization as app grows, though more code upfront
+### Repository Pattern (Backend)
+- **D-06:** Separate repositories for each entity — VideoRepository, CategoryRepository
+- SQLAlchemy models with repository pattern
 
 ### Project Structure
-- **D-08:** Feature-grouped structure: src/ui, src/data, src/core, src/lib
+- **D-07:** /backend - FastAPI project with repository layer
+- **D-08:** /frontend - React project with components
 
 ### Database Schema
 - **D-09:** Simple schema:
   - videos: id, url, title, channel, duration, thumbnail, watched, created
   - categories: id, name, type (major/minor)
   - video_categories (junction table)
-
-### SQLite Persistence
-- **D-10:** Persist to IndexedDB on every write — ensures no data loss, simpler logic
+- **D-10:** SQLite database in /backend/data/
 
 ### the agent's Discretion
-- Exact component structure within src/ui/
-- File naming conventions
-- Error boundary handling approach
+- Exact file structure within /backend/
+- Exact file structure within /frontend/
+- API endpoint conventions
+- Component naming patterns
 
 </decisions>
 
 <specifics>
 ## Specific Ideas
 
-"No, keep it simple for Phase 1" — user emphasized minimal viable approach.
+User requested separate backend (FastAPI) and frontend (React) directories.
 
 </specifics>
 
@@ -56,17 +61,11 @@ Project scaffolding with React + TypeScript + SQLite database, repository layer,
 
 **Downstream agents MUST read these before planning or implementing.**
 
-### Stack Research
-- `.planning/research/STACK.md` — Technology recommendations, version compatibility
+### Stack
+- `.planning/research/STACK.md` — Technology recommendations
 
 ### Architecture
-- `.planning/research/ARCHITECTURE.md` — Layer architecture, repository pattern guidance
-
-### Features
-- `.planning/research/FEATURES.md` — Table stakes features for Phase 1
-
-### Pitfalls
-- `.planning/research/PITFALLS.md` — SQLite pitfalls to avoid
+- `.planning/research/ARCHITECTURE.md` — Layer architecture patterns
 
 </canonical_refs>
 
@@ -74,21 +73,21 @@ Project scaffolding with React + TypeScript + SQLite database, repository layer,
 ## Existing Code Insights
 
 ### Reusable Assets
-- None yet — this is a greenfield project
+- None yet — greenfield project
 
 ### Established Patterns
-- None — Phase 1 establishes initial patterns
+- None — Phase 1 establishes patterns
 
 ### Integration Points
-- Browser IndexedDB via idb for persistence
-- SQL.js for database queries
+- Frontend calls backend API endpoints
+- SQLite via backend API
 
 </code_context>
 
 <deferred>
 ## Deferred Ideas
 
-- PWA support — future phase (Phase 5 per roadmap)
+- PWA support — future phase
 - Channel sync — v2 feature
 - Export functionality — v2 feature
 

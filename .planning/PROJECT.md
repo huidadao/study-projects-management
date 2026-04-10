@@ -34,12 +34,17 @@ Users can systematically organize their YouTube learning resources, track what t
 ## Context
 
 - User wants to organize learning videos from YouTube
-- Prefer local storage (SQLite) for privacy/simplicity
+- Backend (FastAPI) + Frontend (React) architecture
 - Need both web and mobile access
+
+## Architecture
+
+- **Backend**: FastAPI (Python) in /backend directory
+- **Frontend**: React 19 + Vite + TypeScript in /frontend directory
+- **Storage**: SQLite database (via backend API)
 
 ## Constraints
 
-- **Storage**: SQLite database (local)
 - **Platform**: Web app + mobile-friendly (responsive/PWA)
 - **Data Source**: Manual URL entry + YouTube channel sync
 
@@ -47,11 +52,10 @@ Users can systematically organize their YouTube learning resources, track what t
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| SQLite for local storage | Simple, no server needed, good for single user | — Pending |
-| Web + mobile responsive | Cover both use cases with single codebase | — Pending |
-| Custom categories (not YouTube tags) | More flexible for personal organization | — Pending |
-| React 19 + Vite + TypeScript | User preference for stack during discuss-phase | — Pending |
-| Tailwind CSS + Zod + Axios | User preference during discuss-phase | — Pending |
+| FastAPI backend | Python web API with SQLite | — Pending |
+| React frontend | User preference | — Pending |
+| Separate /backend and /frontend | Clear separation of concerns | — Pending |
+| Custom categories | User-defined major/minor | — Pending |
 
 ---
 *Last updated: 2026-04-10 after initialization*
