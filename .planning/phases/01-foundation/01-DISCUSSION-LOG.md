@@ -5,7 +5,18 @@
 
 **Date:** 2026-04-10
 **Phase:** 01-foundation
-**Areas discussed:** Repository pattern, Project structure, Database schema, SQLite persistence, Architecture
+**Areas discussed:** Tech stack, Repository pattern, Project structure, Database schema, Architecture
+
+---
+
+## Tech Stack (Backend)
+
+| Option | Description | Selected |
+|--------|------------|----------|
+| FastAPI + SQLite + SQLModel + asyncio + CORS + Pydantic | User requested stack | ✓ |
+| SQLAlchemy | Original recommendation | |
+
+**User's choice:** FastAPI + SQLite + SQLModel + asyncio + CORS + Pydantic + Repository(BaseModel inherit) + middleware
 
 ---
 
@@ -13,65 +24,41 @@
 
 | Option | Description | Selected |
 |--------|------------|----------|
-| Single repository | Video and Category in one repository — simpler for Phase 1 | |
-| Separate repos | Separate repositories for each entity — better as app grows, more code upfront | ✓ |
+| SQLModel BaseModel inheritance | User requested | ✓ |
+| SQLAlchemy | Original recommendation | |
 
-**User's choice:** Separate repos
-
----
-
-## Project Structure
-
-| Option | Description | Selected |
-|--------|------------|----------|
-| Feature-grouped | src/ui, src/data, src/core, src/lib | ✓ |
-
-**User's choice:** Feature-grouped structure
+**User's choice:** Repository pattern with BaseModel inheritance
 
 ---
 
-## Stack
+## Middleware
 
 | Option | Description | Selected |
 |--------|------------|----------|
-| Keep Vue.js | Vue 3 + Vite + TypeScript + sql.js | |
-| Use React | React 19 + Vite + TypeScript + Tailwind | ✓ |
+| CORS, logging, error handling | User requested | ✓ |
 
-**User's choice:** React stack
+**User's choice:** CORS middleware, Request/Response logging, Error handling middleware
 
 ---
 
-## Architecture Change (Post-initial)
+## Architecture
 
 | Option | Description | Selected |
 |--------|------------|----------|
-| Single frontend | React only (original plan) | |
-| Backend + Frontend | FastAPI backend + React frontend in separate directories | ✓ |
+| Backend + Frontend in separate directories | ✓ |
 
-**User's choice:** Separate /backend (FastAPI) and /frontend (React) directories
-**Notes:** User requested backend/frontend separation after initial discuss
+**User's choice:** /backend (FastAPI) + /frontend (React)
+**Notes:** User requested separation after initial discuss
 
 ---
 
-## Database Schema
+## Database
 
 | Option | Description | Selected |
 |--------|------------|----------|
-| Simple schema | videos, categories, video_categories tables | ✓ |
-| Extended schema | Additional fields for search, notes | |
+| SQLite in /backend/data/ | ✓ |
 
-**User's choice:** Simple schema
-
----
-
-## SQLite Persistence (Updated for backend architecture)
-
-| Option | Description | Selected |
-|--------|------------|----------|
-| On every write | Auto-save after every database write | ✓ |
-| Periodic | Batch save | |
-
-**User's choice:** On every write (now handled by FastAPI backend)
+**User's choice:** SQLite database location
 
 ---
 

@@ -19,27 +19,39 @@ This phase establishes the foundation for all subsequent phases — both project
 <decisions>
 ## Implementation Decisions
 
-### Tech Stack
-- **D-01:** FastAPI (Python) backend with SQLite — API layer
-- **D-02:** React 19 + Vite + TypeScript frontend — User requested separation
-- **D-03:** Tailwind CSS for frontend styling
-- **D-04:** SQLAlchemy for backend ORM
-- **D-05:** Pydantic for backend validation
+### Tech Stack (Backend)
+- **D-01:** FastAPI — Web framework
+- **D-02:** SQLite — Database
+- **D-03:** SQLModel — ORM (SQLAlchemy-based)
+- **D-04:** asyncio — Async support
+- **D-05:** CORS — Cross-origin resource sharing
+- **D-06:** Pydantic — Data validation
+
+### Tech Stack (Frontend)
+- **D-07:** React 19 + Vite + TypeScript frontend
+- **D-08:** Tailwind CSS for styling
+- **D-09:** Axios for HTTP requests
 
 ### Repository Pattern (Backend)
-- **D-06:** Separate repositories for each entity — VideoRepository, CategoryRepository
-- SQLAlchemy models with repository pattern
+- **D-10:** SQLModel BaseModel inheritance for all models
+- **D-11:** Separate repositories for each entity — VideoRepository, CategoryRepository
+- Repository inherits from base repository class
+
+### Middleware (Backend)
+- **D-12:** CORS middleware enabled
+- **D-13:** Request/Response middleware logging
+- **D-14:** Error handling middleware
 
 ### Project Structure
-- **D-07:** /backend - FastAPI project with repository layer
-- **D-08:** /frontend - React project with components
+- **D-15:** /backend - FastAPI project with repository layer
+- **D-16:** /frontend - React project with components
 
 ### Database Schema
-- **D-09:** Simple schema:
+- **D-17:** Simple schema:
   - videos: id, url, title, channel, duration, thumbnail, watched, created
   - categories: id, name, type (major/minor)
   - video_categories (junction table)
-- **D-10:** SQLite database in /backend/data/
+- **D-18:** SQLite database in /backend/data/
 
 ### the agent's Discretion
 - Exact file structure within /backend/
