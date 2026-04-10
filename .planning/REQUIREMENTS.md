@@ -9,35 +9,35 @@
 
 - [ ] **VID-01**: User can add a video by pasting YouTube URL
 - [ ] **VID-02**: System fetches and stores video metadata (title, channel, duration, thumbnail URL, publish date)
-- [ ] **VID-03**: User can view list of all saved videos in dashboard
-- [ ] **VID-04**: User can edit video metadata (title, notes)
-- [ ] **VID-05**: User can delete a video from the collection
-- [ ] **VID-06**: User can mark video as watched/unwatched
-- [ ] **VID-07**: User can open video in external YouTube player
+- [x] **VID-03**: User can view list of all saved videos in dashboard
+- [x] **VID-04**: User can edit video metadata (title, notes)
+- [x] **VID-05**: User can delete a video from the collection
+- [x] **VID-06**: User can mark video as watched/unwatched
+- [x] **VID-07**: User can open video in external YouTube player
 
 ### Category System
 
 - [ ] **CAT-01**: User can create custom categories
 - [ ] **CAT-02**: User can assign major category to a video
 - [ ] **CAT-03**: User can assign minor category to a video
-- [ ] **CAT-04**: User can edit category names
-- [ ] **CAT-05**: User can delete categories
+- [x] **CAT-04**: User can edit category names
+- [x] **CAT-05**: User can delete categories
 - [ ] **CAT-06**: User can filter video list by category
 
 ### Timestamp Notes (Mid-viewpoints)
 
-- [ ] **NOTE-01**: User can add a note with timestamp to a video
-- [ ] **NOTE-02**: User can view all notes for a video
-- [ ] **NOTE-03**: User can edit note content and timestamp
-- [ ] **NOTE-04**: User can delete a note
-- [ ] **NOTE-05**: User can click note to open video at that timestamp (external player)
+- [x] **NOTE-01**: User can add a note with timestamp to a video
+- [x] **NOTE-02**: User can view all notes for a video
+- [x] **NOTE-03**: User can edit note content and timestamp
+- [x] **NOTE-04**: User can delete a note
+- [x] **NOTE-05**: User can click note to open video at that timestamp (external player)
 
 ### Search
 
-- [ ] **SCH-01**: User can search videos by title
-- [ ] **SCH-02**: User can search videos by channel name
-- [ ] **SCH-03**: User can search notes by content
-- [ ] **SCH-04**: Search results display matching videos with context
+- [x] **SCH-01**: User can search videos by title
+- [x] **SCH-02**: User can search videos by channel name
+- [x] **SCH-03**: User can search notes by content
+- [x] **SCH-04**: Search results display matching videos with context
 
 ### Study Schedule
 
@@ -49,11 +49,11 @@
 
 ### Dashboard
 
-- [ ] **DASH-01**: Dashboard displays all videos with thumbnail, title, channel
-- [ ] **DASH-02**: Dashboard shows video watch status (watched/unwatched)
-- [ ] **DASH-03**: Dashboard shows category badges for each video
+- [x] **DASH-01**: Dashboard displays all videos with thumbnail, title, channel
+- [x] **DASH-02**: Dashboard shows video watch status (watched/unwatched)
+- [x] **DASH-03**: Dashboard shows category badges for each video
 - [ ] **DASH-04**: Dashboard shows upcoming scheduled videos
-- [ ] **DASH-05**: Dashboard has quick-add form for new videos
+- [x] **DASH-05**: Dashboard has quick-add form for new videos
 
 ## v2 Requirements
 

@@ -28,7 +28,11 @@ A web application for organizing YouTube learning videos with custom categories,
   4. Video API endpoints respond
   5. Category API endpoints respond
   6. Frontend connects to backend API
-**Plans**: TBD
+**Plans**: 2 plans
+
+**Plan list:**
+- [x] 01-01-PLAN.md — Backend setup (FastAPI + SQLite + models + repositories)
+- [x] 01-02-PLAN.md — Frontend setup (React + Vite + TypeScript + Axios + Zustand)
 
 ### Phase 2: Core Features
 **Goal**: Full video management, categories, timestamp notes, search, and dashboard UI
@@ -41,7 +45,12 @@ A web application for organizing YouTube learning videos with custom categories,
   4. User can add timestamped notes to videos
   5. User can search videos by title, channel, notes
   6. Dashboard displays videos with status and categories
-**Plans**: TBD
+**Plans**: 3 plans
+
+**Plan list:**
+- [x] 02-01-PLAN.md — Backend API extensions (Notes, Search, Watched Toggle)
+- [x] 02-02-PLAN.md — Dashboard UI (Video Grid, SearchBar, CategorySidebar, QuickAdd)
+- [ ] 02-03-PLAN.md — Notes Modal with YouTube timestamp integration
 
 ### Phase 3: Study Schedule
 **Goal**: Watch scheduling, progress tracking, and schedule-aware dashboard
@@ -58,8 +67,8 @@ A web application for organizing YouTube learning videos with custom categories,
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | - |
-| 2. Core Features | 0/3 | Not started | - |
+| 1. Foundation | 2/2 | Ready to execute | - |
+| 2. Core Features | 0/3 | Ready to execute | - |
 | 3. Study Schedule | 0/2 | Not started | - |
 
 ---
