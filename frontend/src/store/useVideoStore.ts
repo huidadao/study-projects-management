@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { apiClient, toggleWatched as apiToggleWatched, getNotes as apiGetNotes, createNote as apiCreateNote, updateNote as apiUpdateNote, deleteNote as apiDeleteNote } from '../api/client'
+import { apiClient, toggleWatched as apiToggleWatched, getNotes as apiGetNotes, createNote as apiCreateNote, updateNote as apiUpdateNote, deleteNote as apiDeleteNote, Schedule, getUpcoming as apiGetUpcoming, createSchedule as apiCreateSchedule, completeSchedule as apiCompleteSchedule, rescheduleVideo as apiRescheduleVideo, deleteSchedule as apiDeleteSchedule } from '../api/client'
 
 export interface Video {
   id: number
@@ -26,10 +26,13 @@ export interface Note {
   created: string
 }
 
+export { Schedule }
+
 interface VideoStore {
   videos: Video[]
   categories: Category[]
   notes: Note[]
+  upcoming: Schedule[]
   searchQuery: string
   selectedCategories: number[]
   searchType: 'title' | 'channel' | 'notes'
@@ -46,12 +49,18 @@ interface VideoStore {
   setSearchType: (type: 'title' | 'channel' | 'notes') => void
   toggleCategory: (categoryId: number) => void
   getFilteredVideos: () => Video[]
+  fetchUpcoming: () => Promise<void>
+  createSchedule: (data: {video_id: number; scheduled_date: string; recurring?: boolean; recurring_type?: string | null}) => Promise<void>
+  completeSchedule: (id: number) => Promise<void>
+  reschedule: (id: number, scheduled_date: string) => Promise<void>
+  removeSchedule: (id: number) => Promise<void>
 }
 
 export const useVideoStore = create<VideoStore>((set, get) => ({
   videos: [],
   categories: [],
   notes: [],
+  upcoming: [],
   searchQuery: '',
   selectedCategories: [],
   searchType: 'title',
@@ -121,5 +130,25 @@ export const useVideoStore = create<VideoStore>((set, get) => ({
     }
     
     return filtered
+  },
+  fetchUpcoming: async () => {
+    const data = await apiGetUpcoming()
+    set({ upcoming: data })
+  },
+  createSchedule: async (data) => {
+    await apiCreateSchedule(data)
+    get().fetchUpcoming()
+  },
+  completeSchedule: async (id: number) => {
+    await apiCompleteSchedule(id)
+    get().fetchUpcoming()
+  },
+  reschedule: async (id: number, scheduled_date: string) => {
+    await apiRescheduleVideo(id, scheduled_date)
+    get().fetchUpcoming()
+  },
+  removeSchedule: async (id: number) => {
+    await apiDeleteSchedule(id)
+    get().fetchUpcoming()
   }
 }))
