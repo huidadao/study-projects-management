@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { apiClient, toggleWatched as apiToggleWatched, getNotes as apiGetNotes, createNote as apiCreateNote, updateNote as apiUpdateNote, deleteNote as apiDeleteNote, Schedule, getUpcoming as apiGetUpcoming, createSchedule as apiCreateSchedule, completeSchedule as apiCompleteSchedule, rescheduleVideo as apiRescheduleVideo, deleteSchedule as apiDeleteSchedule } from '../api/client'
+import { apiClient, toggleWatched as apiToggleWatched, getNotes as apiGetNotes, createNote as apiCreateNote, updateNote as apiUpdateNote, deleteNote as apiDeleteNote, getUpcoming as apiGetUpcoming, createSchedule as apiCreateSchedule, completeSchedule as apiCompleteSchedule, rescheduleVideo as apiRescheduleVideo, deleteSchedule as apiDeleteSchedule } from '../api/client'
+import type { Schedule } from '../api/client'
 
 export interface Video {
   id: number
@@ -25,8 +26,6 @@ export interface Note {
   content: string
   created: string
 }
-
-export { Schedule }
 
 interface VideoStore {
   videos: Video[]
