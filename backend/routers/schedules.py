@@ -65,10 +65,18 @@ async def complete_schedule(schedule_id: int, session: Session = Depends(get_ses
     """Mark schedule as complete"""
     repo = ScheduleRepository(session)
     try:
+        schedule = session.get(Schedule, schedule_id)
+        if not schedule:
+            raise HTTPException(status_code=404, detail="Schedule not found")
         repo.complete(schedule_id)
-        return session.get(Schedule, schedule_id)
-    except ValueError:
-        raise HTTPException(status_code=404, detail="Schedule not found")
+        schedule = session.get(Schedule, schedule_id)
+        return schedule
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error completing schedule: {str(e)}"
+        )
 
 
 @router.put("/{schedule_id}", response_model=ScheduleResponse)
@@ -87,5 +95,7 @@ async def reschedule_video(
 async def delete_schedule(schedule_id: int, session: Session = Depends(get_session)):
     """Remove from schedule"""
     repo = ScheduleRepository(session)
-    if not repo.delete(schedule_id):
+    schedule = session.get(Schedule, schedule_id)
+    if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
+    repo.delete(schedule_id)
