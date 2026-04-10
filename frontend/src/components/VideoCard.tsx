@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Video, Category } from '../store/useVideoStore'
+import { NotesModal } from './NotesModal'
 
 interface VideoCardProps {
   video: Video
@@ -16,6 +18,8 @@ const formatDuration = (seconds: number | undefined): string => {
 }
 
 export function VideoCard({ video, categories = [], onToggleWatched, onClick }: VideoCardProps) {
+  const [notesOpen, setNotesOpen] = useState(false)
+
   const handleToggleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     onToggleWatched?.(video.id, !video.watched)
@@ -23,6 +27,11 @@ export function VideoCard({ video, categories = [], onToggleWatched, onClick }: 
 
   const handleLinkClick = () => {
     onClick?.()
+  }
+
+  const handleNotesClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setNotesOpen(true)
   }
 
   return (
@@ -52,6 +61,14 @@ export function VideoCard({ video, categories = [], onToggleWatched, onClick }: 
           >
             {video.watched ? '↩' : '✓'}
           </button>
+
+          <button 
+            className="video-card-notes"
+            onClick={handleNotesClick}
+            title="View notes"
+          >
+            📝
+          </button>
         </div>
         
         {categories.length > 0 && (
@@ -64,6 +81,14 @@ export function VideoCard({ video, categories = [], onToggleWatched, onClick }: 
           </div>
         )}
       </div>
+
+      <NotesModal
+        isOpen={notesOpen}
+        onClose={() => setNotesOpen(false)}
+        videoId={video.id}
+        videoTitle={video.title}
+        videoUrl={video.url}
+      />
     </div>
   )
 }

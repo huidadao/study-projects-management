@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { apiClient, toggleWatched as apiToggleWatched, getNotes as apiGetNotes, createNote as apiCreateNote } from '../api/client'
+import { apiClient, toggleWatched as apiToggleWatched, getNotes as apiGetNotes, createNote as apiCreateNote, updateNote as apiUpdateNote, deleteNote as apiDeleteNote } from '../api/client'
 
 export interface Video {
   id: number
@@ -39,6 +39,8 @@ interface VideoStore {
   addCategory: (name: string, categoryType: string) => Promise<void>
   fetchNotes: (videoId: number) => Promise<void>
   createNote: (videoId: number, timestamp: number, content: string) => Promise<void>
+  updateNote: (noteId: number, data: {timestamp?: number; content?: string}) => Promise<void>
+  deleteNote: (noteId: number) => Promise<void>
   toggleWatched: (id: number, watched: boolean) => Promise<void>
   setSearchQuery: (query: string) => void
   setSearchType: (type: 'title' | 'channel' | 'notes') => void
@@ -75,6 +77,12 @@ export const useVideoStore = create<VideoStore>((set, get) => ({
   },
   createNote: async (videoId: number, timestamp: number, content: string) => {
     await apiCreateNote(videoId, timestamp, content)
+  },
+  updateNote: async (noteId: number, data: {timestamp?: number; content?: string}) => {
+    await apiUpdateNote(noteId, data)
+  },
+  deleteNote: async (noteId: number) => {
+    await apiDeleteNote(noteId)
   },
   toggleWatched: async (id: number, watched: boolean) => {
     await apiToggleWatched(id, watched)
