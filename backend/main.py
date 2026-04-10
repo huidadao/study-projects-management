@@ -22,6 +22,7 @@ app = FastAPI(
 def create_tables():
     from models.video import Video
     from models.category import Category
+    from models.note import Note
     SQLModel.metadata.create_all(engine)
 
 # CORS middleware - allow frontend origin
@@ -50,7 +51,8 @@ async def root():
 
 
 # Import and include routers
-from routers import videos, categories
+from routers import videos, categories, notes
 
 app.include_router(videos.router, prefix="/api/videos", tags=["videos"])
 app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
+app.include_router(notes.router, prefix="/api/notes", tags=["notes"])
