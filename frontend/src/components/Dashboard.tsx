@@ -4,6 +4,7 @@ import { VideoGrid } from './VideoGrid'
 import { SearchBar } from './SearchBar'
 import { CategorySidebar } from './CategorySidebar'
 import { QuickAddForm } from './QuickAddForm'
+import { UpcomingSection } from './UpcomingSection'
 
 export function Dashboard() {
   const {
@@ -105,6 +106,8 @@ export function Dashboard() {
         />
 
         <QuickAddForm onAddVideo={handleAddVideo} />
+
+        <UpcomingSection />
 
         <VideoGrid
           videos={filteredVideos}

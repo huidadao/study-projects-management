@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Video, Category } from '../store/useVideoStore'
 import { NotesModal } from './NotesModal'
+import { ScheduleForm } from './ScheduleForm'
 
 interface VideoCardProps {
   video: Video
@@ -19,6 +20,7 @@ const formatDuration = (seconds: number | undefined): string => {
 
 export function VideoCard({ video, categories = [], onToggleWatched, onClick }: VideoCardProps) {
   const [notesOpen, setNotesOpen] = useState(false)
+  const [scheduleOpen, setScheduleOpen] = useState(false)
 
   const handleToggleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -32,6 +34,11 @@ export function VideoCard({ video, categories = [], onToggleWatched, onClick }: 
   const handleNotesClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     setNotesOpen(true)
+  }
+
+  const handleScheduleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setScheduleOpen(true)
   }
 
   return (
@@ -69,6 +76,14 @@ export function VideoCard({ video, categories = [], onToggleWatched, onClick }: 
           >
             📝
           </button>
+
+          <button 
+            className="video-card-schedule"
+            onClick={handleScheduleClick}
+            title="Schedule"
+          >
+            📅
+          </button>
         </div>
         
         {categories.length > 0 && (
@@ -88,6 +103,11 @@ export function VideoCard({ video, categories = [], onToggleWatched, onClick }: 
         videoId={video.id}
         videoTitle={video.title}
         videoUrl={video.url}
+      />
+
+      <ScheduleForm
+        videoId={video.id}
+        onClose={() => setScheduleOpen(false)}
       />
     </div>
   )
