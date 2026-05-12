@@ -9,6 +9,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "https://localhost:5173",
+    "https://study-projects-management.vercel.app",
 ]
 
 # If you have a specific Vercel domain, add it here after first deploy:
