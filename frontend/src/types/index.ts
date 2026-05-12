@@ -24,7 +24,8 @@ export interface CategoryProgress {
 }
 
 export interface DashboardData {
-  total_categories: number
+  total_parent_categories: number
+  total_child_categories: number
   total_videos: number
   watched_videos: number
   progress_by_category: CategoryProgress[]

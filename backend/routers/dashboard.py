@@ -9,7 +9,14 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 @router.get("/", response_model=DashboardData)
 def get_dashboard(session: Session = Depends(get_session)):
-    total_categories = session.exec(select(func.count(Category.id))).first() or 0
+    total_parent_categories = (
+        session.exec(select(func.count(Category.id)).where(Category.parent_id == None)).first()
+        or 0
+    )
+    total_child_categories = (
+        session.exec(select(func.count(Category.id)).where(Category.parent_id != None)).first()
+        or 0
+    )
     total_videos = session.exec(select(func.count(Video.id))).first() or 0
     watched_videos = (
         session.exec(select(func.count(Video.id)).where(Video.watched == True)).first()
@@ -45,7 +52,8 @@ def get_dashboard(session: Session = Depends(get_session)):
         )
 
     return DashboardData(
-        total_categories=total_categories,
+        total_parent_categories=total_parent_categories,
+        total_child_categories=total_child_categories,
         total_videos=total_videos,
         watched_videos=watched_videos,
         progress_by_category=progress_by_category,

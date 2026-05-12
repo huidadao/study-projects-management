@@ -52,7 +52,8 @@ export function Dashboard() {
       </h1>
 
       <StatsCards
-        totalCategories={data.total_categories}
+        totalParentCategories={data.total_parent_categories}
+        totalChildCategories={data.total_child_categories}
         totalVideos={data.total_videos}
         watchedVideos={data.watched_videos}
       />

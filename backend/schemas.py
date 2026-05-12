@@ -72,7 +72,8 @@ class CategoryProgress(BaseModel):
 
 
 class DashboardData(BaseModel):
-    total_categories: int
+    total_parent_categories: int
+    total_child_categories: int
     total_videos: int
     watched_videos: int
     progress_by_category: List[CategoryProgress]
