@@ -33,8 +33,13 @@ export const api = {
     request<void>(`/categories/${id}`, { method: 'DELETE' }),
 
   // Videos
-  getVideos: (categoryId?: number) =>
-    request<Video[]>(categoryId ? `/videos?category_id=${categoryId}` : '/videos'),
+  getVideos: (categoryId?: number, includeChildren?: boolean) => {
+    const params = new URLSearchParams()
+    if (categoryId) params.append('category_id', String(categoryId))
+    if (includeChildren) params.append('include_children', 'true')
+    const query = params.toString()
+    return request<Video[]>(`/videos${query ? '?' + query : ''}`)
+  },
   getVideo: (id: number) => request<Video>(`/videos/${id}`),
   createVideo: (data: { title: string; url: string; category_id: number; watched?: boolean }) =>
     request<Video>('/videos', { method: 'POST', body: JSON.stringify(data) }),

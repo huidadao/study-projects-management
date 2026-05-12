@@ -70,7 +70,10 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
   const fetchVideos = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await api.getVideos(selectedCategoryId ?? undefined)
+      const data = await api.getVideos(
+        selectedCategoryId ?? undefined,
+        selectedCategoryId ? true : undefined,
+      )
       const categoriesMap = new Map(categories.map((c) => [c.id, c.name]))
       const videosWithCategory = data.map((v) => ({
         ...v,

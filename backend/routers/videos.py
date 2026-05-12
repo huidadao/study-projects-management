@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 from typing import List, Optional
 from database import get_session
@@ -28,11 +28,18 @@ def create_video(video: VideoCreate, session: Session = Depends(get_session)):
 
 @router.get("/", response_model=List[VideoRead])
 def read_videos(
-    category_id: Optional[int] = None, session: Session = Depends(get_session)
+    category_id: Optional[int] = None,
+    include_children: bool = Query(False),
+    session: Session = Depends(get_session),
 ):
     query = select(Video)
     if category_id:
-        query = query.where(Video.category_id == category_id)
+        if include_children:
+            from routers.categories import get_descendant_ids
+            ids = get_descendant_ids(session, category_id)
+            query = query.where(Video.category_id.in_(ids))
+        else:
+            query = query.where(Video.category_id == category_id)
     videos = session.exec(query).all()
     return videos
 

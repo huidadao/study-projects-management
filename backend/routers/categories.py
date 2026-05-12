@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 from typing import List
 from database import get_session
@@ -6,6 +6,17 @@ from models import Category
 from schemas import CategoryCreate, CategoryUpdate, CategoryRead, CategoryTree
 
 router = APIRouter(prefix="/categories", tags=["categories"])
+
+
+def get_descendant_ids(session: Session, category_id: int) -> list[int]:
+    """Get all descendant category IDs including the parent itself."""
+    result = [category_id]
+    children = session.exec(
+        select(Category.id).where(Category.parent_id == category_id)
+    ).all()
+    for child_id in children:
+        result.extend(get_descendant_ids(session, child_id))
+    return result
 
 
 @router.post("/", response_model=CategoryRead, status_code=201)
