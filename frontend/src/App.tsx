@@ -6,22 +6,10 @@ import { ConfirmDialog } from './components/ConfirmDialog'
 import { VideoGrid } from './components/VideoGrid'
 import { VideoModal } from './components/VideoModal'
 import { Dashboard } from './components/Dashboard'
-
-interface Category {
-  id: number
-  name: string
-  parent_id: number | null
-  created_at: string
-  children?: Category[]
-}
-
-interface Video {
-  id: number
-  title: string
-  url: string
-  category_id: number
-  watched: boolean
-}
+import { ToastContainer } from './components/Toast'
+import { api } from './lib/api'
+import { useToastStore } from './store/toast'
+import type { Category, Video } from './types'
 
 function App() {
   const [currentView, setCurrentView] = useState<'main' | 'dashboard'>('main')
@@ -29,9 +17,11 @@ function App() {
   const [showVideoModal, setShowVideoModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteType, setDeleteType] = useState<'category' | 'video'>('category')
-  
+
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+
+  const showToast = useToastStore((s) => s.showToast)
 
   function handleAddCategory() {
     setSelectedCategory(null)
@@ -68,17 +58,20 @@ function App() {
   async function confirmDelete() {
     try {
       if (deleteType === 'category' && selectedCategory) {
-        await fetch(`http://localhost:8000/categories/${selectedCategory.id}`, {
-          method: 'DELETE'
-        })
+        await api.deleteCategory(selectedCategory.id)
+        showToast(`Category "${selectedCategory.name}" deleted`, 'success')
       } else if (deleteType === 'video' && selectedVideo) {
-        await fetch(`http://localhost:8000/videos/${selectedVideo.id}`, {
-          method: 'DELETE'
-        })
+        await api.deleteVideo(selectedVideo.id)
+        showToast(`Video "${selectedVideo.title}" deleted`, 'success')
       }
-      window.location.reload()
     } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Delete failed'
+      showToast(msg, 'error')
       console.error('Delete failed:', err)
+    } finally {
+      setShowDeleteConfirm(false)
+      setSelectedCategory(null)
+      setSelectedVideo(null)
     }
   }
 
@@ -89,7 +82,7 @@ function App() {
         onEditCategory={handleEditCategory}
         onDeleteCategory={handleDeleteCategory}
       />
-      
+
       <main className="flex-1 p-6 overflow-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-medium tracking-normal text-[#181d26]">
@@ -107,7 +100,7 @@ function App() {
             {currentView === 'main' ? 'Dashboard' : 'Main'}
           </button>
         </div>
-        
+
         {currentView === 'main' ? (
           <VideoGrid
             onAddVideo={handleAddVideo}
@@ -142,6 +135,8 @@ function App() {
         onConfirm={confirmDelete}
         onCancel={() => setShowDeleteConfirm(false)}
       />
+
+      <ToastContainer />
     </div>
   )
 }

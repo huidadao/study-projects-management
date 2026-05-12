@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Check, Edit2, Trash2, ExternalLink } from 'lucide-react'
 import { useStore } from '../store'
-
-interface Video {
-  id: number
-  title: string
-  url: string
-  category_id: number
-  watched: boolean
-  created_at: string
-  category_name?: string
-}
+import { api } from '../lib/api'
+import { useToastStore } from '../store/toast'
+import type { Video } from '../types'
 
 interface VideoGridProps {
   onAddVideo: () => void
@@ -21,6 +14,7 @@ interface VideoGridProps {
 export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridProps) {
   const { videos, setVideos, categories } = useStore()
   const [loading, setLoading] = useState(true)
+  const showToast = useToastStore((s) => s.showToast)
 
   useEffect(() => {
     fetchVideos()
@@ -28,17 +22,16 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
 
   async function fetchVideos() {
     try {
-      const res = await fetch('http://localhost:8000/videos')
-      const data = await res.json()
-      
-      const categoriesMap = new Map((categories as Array<{id: number, name: string}>).map(c => [c.id, c.name]))
-      const videosWithCategory = data.map((v: Video) => ({
+      const data = await api.getVideos()
+      const categoriesMap = new Map(categories.map((c) => [c.id, c.name]))
+      const videosWithCategory = data.map((v) => ({
         ...v,
-        category_name: categoriesMap.get(v.category_id)
+        category_name: categoriesMap.get(v.category_id),
       }))
-      
       setVideos(videosWithCategory)
     } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch videos'
+      showToast(msg, 'error')
       console.error('Failed to fetch videos:', err)
     } finally {
       setLoading(false)
@@ -47,15 +40,14 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
 
   async function toggleWatched(video: Video) {
     try {
-      await fetch(`http://localhost:8000/videos/${video.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ watched: !video.watched })
-      })
-      setVideos((videos as Video[]).map(v => 
-        v.id === video.id ? { ...v, watched: !v.watched } : v
-      ))
+      const updated = await api.updateVideo(video.id, { watched: !video.watched })
+      setVideos(
+        videos.map((v) => (v.id === video.id ? { ...v, watched: updated.watched } : v))
+      )
+      showToast(updated.watched ? 'Marked as watched' : 'Marked as unwatched', 'success')
     } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update status'
+      showToast(msg, 'error')
       console.error('Failed to toggle watched:', err)
     }
   }
@@ -68,9 +60,7 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
     )
   }
 
-  const videoList = videos as Video[]
-
-  if (videoList.length === 0) {
+  if (videos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <p className="text-[rgba(4,14,32,0.69)]">No videos yet</p>
@@ -95,9 +85,9 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
           Add Video
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {videoList.map((video: Video) => (
+        {videos.map((video) => (
           <div
             key={video.id}
             className="bg-white border border-[#e0e2e6] rounded-2xl p-4 hover:shadow-md transition-shadow"
@@ -109,21 +99,21 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
               <button
                 onClick={() => toggleWatched(video)}
                 className={`p-1 rounded transition-colors ${
-                  video.watched 
-                    ? 'text-[#1b61c9] bg-[#1b61c9]/10' 
+                  video.watched
+                    ? 'text-[#1b61c9] bg-[#1b61c9]/10'
                     : 'text-[rgba(4,14,32,0.69)] hover:bg-gray-100'
                 }`}
               >
                 <Check className="w-4 h-4" />
               </button>
             </div>
-            
+
             {video.category_name && (
               <p className="text-xs text-[rgba(4,14,32,0.69)] mb-2">
                 {video.category_name}
               </p>
             )}
-            
+
             <a
               href={video.url}
               target="_blank"
@@ -133,7 +123,7 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
               <ExternalLink className="w-3.5 h-3.5" />
               Watch
             </a>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={() => onEditVideo(video)}

@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useStore } from '../store'
-
-interface Video {
-  id: number
-  title: string
-  url: string
-  category_id: number
-  watched: boolean
-}
+import { api } from '../lib/api'
+import { useToastStore } from '../store/toast'
+import type { Video } from '../types'
 
 interface VideoModalProps {
   isOpen: boolean
@@ -17,12 +12,15 @@ interface VideoModalProps {
 }
 
 export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
-  const { categories, setCategories } = useStore()
+  const { categories } = useStore()
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [categoryId, setCategoryId] = useState<number>(0)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const showToast = useToastStore((s) => s.showToast)
+  const addVideo = useStore((s) => s.addVideo)
+  const updateVideoInStore = useStore((s) => s.updateVideo)
 
   useEffect(() => {
     if (video) {
@@ -32,10 +30,10 @@ export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
     } else {
       setTitle('')
       setUrl('')
-      setCategoryId(categories.length > 0 ? (categories[0] as {id: number}).id : 0)
+      setCategoryId(categories.length > 0 ? categories[0].id : 0)
     }
     setError('')
-  }, [video, isOpen])
+  }, [video, isOpen, categories])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -59,30 +57,27 @@ export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
     setError('')
 
     try {
-      const apiUrl = video
-        ? `http://localhost:8000/videos/${video.id}`
-        : 'http://localhost:8000/videos'
-      const method = video ? 'PUT' : 'POST'
+      const payload = {
+        title: title.trim(),
+        url: url.trim(),
+        category_id: categoryId,
+      }
 
-      const res = await fetch(apiUrl, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: title.trim(), 
-          url: url.trim(),
-          category_id: categoryId
-        })
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.detail || 'Failed to save video')
+      if (video) {
+        const updated = await api.updateVideo(video.id, payload)
+        updateVideoInStore(updated)
+        showToast('Video updated successfully', 'success')
+      } else {
+        const created = await api.createVideo({ ...payload, watched: false })
+        addVideo(created)
+        showToast('Video created successfully', 'success')
       }
 
       onClose()
-      window.location.reload()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const msg = err instanceof Error ? err.message : 'An error occurred'
+      setError(msg)
+      showToast(msg, 'error')
     } finally {
       setLoading(false)
     }
@@ -111,7 +106,7 @@ export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
             <input
               type="text"
               value={title}
-              onChange={e => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border border-[#e0e2e6] rounded-md text-[#181d26] focus:outline-none focus:ring-2 focus:ring-[#1b61c9]"
               placeholder="Video title"
               autoFocus
@@ -125,7 +120,7 @@ export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
             <input
               type="text"
               value={url}
-              onChange={e => setUrl(e.target.value)}
+              onChange={(e) => setUrl(e.target.value)}
               className="w-full px-3 py-2 border border-[#e0e2e6] rounded-md text-[#181d26] focus:outline-none focus:ring-2 focus:ring-[#1b61c9]"
               placeholder="https://youtube.com/watch?v=..."
             />
@@ -137,11 +132,11 @@ export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
             </label>
             <select
               value={categoryId}
-              onChange={e => setCategoryId(Number(e.target.value))}
+              onChange={(e) => setCategoryId(Number(e.target.value))}
               className="w-full px-3 py-2 border border-[#e0e2e6] rounded-md text-[#181d26] focus:outline-none focus:ring-2 focus:ring-[#1b61c9]"
             >
               <option value={0}>Select a category</option>
-              {(categories as Array<{id: number, name: string}>).map((c) => (
+              {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>

@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
 import { ChevronRight, ChevronDown, Plus, Edit2, Trash2 } from 'lucide-react'
 import { useStore } from '../store'
-
-interface Category {
-  id: number
-  name: string
-  parent_id: number | null
-  created_at: string
-  children?: Category[]
-}
+import { api } from '../lib/api'
+import { useToastStore } from '../store/toast'
+import type { Category } from '../types'
 
 interface CategorySidebarProps {
   onAddCategory: () => void
@@ -19,6 +14,7 @@ interface CategorySidebarProps {
 export function CategorySidebar({ onAddCategory, onEditCategory, onDeleteCategory }: CategorySidebarProps) {
   const { categories, setCategories } = useStore()
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
+  const showToast = useToastStore((s) => s.showToast)
 
   useEffect(() => {
     fetchCategories()
@@ -26,16 +22,17 @@ export function CategorySidebar({ onAddCategory, onEditCategory, onDeleteCategor
 
   async function fetchCategories() {
     try {
-      const res = await fetch('http://localhost:8000/categories/tree')
-      const data = await res.json()
+      const data = await api.getCategoryTree()
       setCategories(data)
     } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch categories'
+      showToast(msg, 'error')
       console.error('Failed to fetch categories:', err)
     }
   }
 
   function toggleExpand(id: number) {
-    setExpandedIds(prev => {
+    setExpandedIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) {
         next.delete(id)
@@ -88,14 +85,12 @@ export function CategorySidebar({ onAddCategory, onEditCategory, onDeleteCategor
         </div>
         {hasChildren && isExpanded && (
           <div>
-            {category.children?.map(child => renderCategory(child, depth + 1))}
+            {category.children?.map((child) => renderCategory(child, depth + 1))}
           </div>
         )}
       </div>
     )
   }
-
-  const rootCategories = categories as Category[]
 
   return (
     <aside className="w-64 h-screen border-r border-[#e0e2e6] flex flex-col bg-white">
@@ -109,12 +104,12 @@ export function CategorySidebar({ onAddCategory, onEditCategory, onDeleteCategor
         </button>
       </div>
       <div className="flex-1 overflow-y-auto py-2">
-        {rootCategories.map(cat => (
+        {categories.map((cat) => (
           <div key={cat.id} className="group">
             {renderCategory(cat)}
           </div>
         ))}
-        {rootCategories.length === 0 && (
+        {categories.length === 0 && (
           <p className="px-4 py-2 text-[rgba(4,14,32,0.69)] text-sm">
             No categories yet
           </p>

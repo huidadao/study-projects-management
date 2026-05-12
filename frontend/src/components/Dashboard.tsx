@@ -2,39 +2,32 @@ import { useEffect, useState } from 'react'
 import { StatsCards } from './StatsCards'
 import { ProgressChart } from './ProgressChart'
 import { VideoGrid } from './VideoGrid'
-
-interface CategoryProgress {
-  category_id: number
-  category_name: string
-  total_videos: number
-  watched_videos: number
-}
-
-interface DashboardData {
-  total_categories: number
-  total_videos: number
-  watched_videos: number
-  progress_by_category: CategoryProgress[]
-}
+import { api } from '../lib/api'
+import { useToastStore } from '../store/toast'
+import type { DashboardData } from '../types'
 
 export function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const showToast = useToastStore((s) => s.showToast)
 
   useEffect(() => {
-    fetch('http://localhost:8000/dashboard')
-      .then((res) => res.json())
-      .then((d: DashboardData) => {
-        setData(d)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error('Failed to fetch dashboard:', err)
-        setError('Failed to load dashboard')
-        setLoading(false)
-      })
+    fetchDashboard()
   }, [])
+
+  async function fetchDashboard() {
+    try {
+      const d = await api.getDashboard()
+      setData(d)
+      setLoading(false)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to load dashboard'
+      showToast(msg, 'error')
+      setError(msg)
+      setLoading(false)
+    }
+  }
 
   if (loading) {
     return (
