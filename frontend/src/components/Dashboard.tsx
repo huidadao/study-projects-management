@@ -1,121 +1,76 @@
-import { useEffect, useState, useMemo } from 'react'
-import { useVideoStore, Video } from '../store/useVideoStore'
+import { useEffect, useState } from 'react'
+import { StatsCards } from './StatsCards'
+import { ProgressChart } from './ProgressChart'
 import { VideoGrid } from './VideoGrid'
-import { SearchBar } from './SearchBar'
-import { CategorySidebar } from './CategorySidebar'
-import { QuickAddForm } from './QuickAddForm'
-import { UpcomingSection } from './UpcomingSection'
+
+interface CategoryProgress {
+  category_id: number
+  category_name: string
+  total_videos: number
+  watched_videos: number
+}
+
+interface DashboardData {
+  total_categories: number
+  total_videos: number
+  watched_videos: number
+  progress_by_category: CategoryProgress[]
+}
 
 export function Dashboard() {
-  const {
-    videos,
-    categories,
-    searchQuery,
-    selectedCategories,
-    searchType,
-    fetchVideos,
-    fetchCategories,
-    addVideo,
-    toggleWatched,
-    setSearchQuery,
-    setSearchType,
-    toggleCategory,
-  } = useVideoStore()
-
+  const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      await Promise.all([fetchVideos(), fetchCategories()])
-      setLoading(false)
-    }
-    load()
-  }, [fetchVideos, fetchCategories])
-
-  // Filter videos based on search and categories
-  const filteredVideos = useMemo(() => {
-    let result = videos
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter((v: Video) => {
-        if (searchType === 'title') {
-          return v.title.toLowerCase().includes(query)
-        } else if (searchType === 'channel') {
-          return v.channel?.toLowerCase().includes(query)
-        }
-        return true
+    fetch('http://localhost:8000/dashboard')
+      .then((res) => res.json())
+      .then((d: DashboardData) => {
+        setData(d)
+        setLoading(false)
       })
-    }
-
-    // Filter by selected categories (if implemented)
-    // Note: Category filtering would need video-category mapping
-    // This is a placeholder for when category assignment is added
-
-    return result
-  }, [videos, searchQuery, selectedCategories, searchType])
-
-  const handleAddVideo = async (url: string) => {
-    await addVideo({ url, title: 'New Video', watched: false })
-  }
-
-  const handleToggleWatched = async (id: number, watched: boolean) => {
-    await toggleWatched(id, watched)
-  }
-
-  const handleVideoClick = (video: Video) => {
-    // Open YouTube link in new tab
-    window.open(video.url, '_blank')
-  }
+      .catch((err) => {
+        console.error('Failed to fetch dashboard:', err)
+        setError('Failed to load dashboard')
+        setLoading(false)
+      })
+  }, [])
 
   if (loading) {
     return (
-      <div className="dashboard-loading">
-        <p>Loading...</p>
+      <div className="p-6">
+        <p className="text-[rgba(4,14,32,0.69)]">Loading...</p>
+      </div>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <div className="p-6">
+        <p className="text-red-600">{error || 'Failed to load dashboard'}</p>
       </div>
     )
   }
 
   return (
-    <div className="dashboard">
-      <CategorySidebar
-        categories={categories}
-        selectedCategories={selectedCategories}
-        onToggleCategory={toggleCategory}
+    <div className="p-6">
+      <h1 className="text-2xl font-medium tracking-normal text-[#181d26] mb-6">
+        Dashboard
+      </h1>
+
+      <StatsCards
+        totalCategories={data.total_categories}
+        totalVideos={data.total_videos}
+        watchedVideos={data.watched_videos}
       />
 
-      <main className="dashboard-main">
-        <div className="dashboard-header">
-          <h1>My Videos</h1>
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            ☰
-          </button>
-        </div>
+      <ProgressChart data={data.progress_by_category} />
 
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          searchType={searchType}
-          onTypeChange={setSearchType}
-        />
-
-        <QuickAddForm onAddVideo={handleAddVideo} />
-
-        <UpcomingSection />
-
-        <VideoGrid
-          videos={filteredVideos}
-          categories={categories}
-          onToggleWatched={handleToggleWatched}
-          onVideoClick={handleVideoClick}
-        />
-      </main>
+      <VideoGrid
+        onAddVideo={() => {}}
+        onEditVideo={() => {}}
+        onDeleteVideo={() => {}}
+      />
     </div>
   )
 }

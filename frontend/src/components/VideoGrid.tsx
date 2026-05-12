@@ -1,34 +1,158 @@
-import { Video, Category } from '../store/useVideoStore'
-import { VideoCard } from './VideoCard'
+import { useEffect, useState } from 'react'
+import { Check, Edit2, Trash2, ExternalLink } from 'lucide-react'
+import { useStore } from '../store'
 
-interface VideoGridProps {
-  videos: Video[]
-  categories?: Category[]
-  onToggleWatched?: (id: number, watched: boolean) => void
-  onVideoClick?: (video: Video) => void
+interface Video {
+  id: number
+  title: string
+  url: string
+  category_id: number
+  watched: boolean
+  created_at: string
+  category_name?: string
 }
 
-export function VideoGrid({ videos, categories = [], onToggleWatched, onVideoClick }: VideoGridProps) {
-  if (videos.length === 0) {
+interface VideoGridProps {
+  onAddVideo: () => void
+  onEditVideo: (video: Video) => void
+  onDeleteVideo: (video: Video) => void
+}
+
+export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridProps) {
+  const { videos, setVideos, categories } = useStore()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchVideos()
+  }, [])
+
+  async function fetchVideos() {
+    try {
+      const res = await fetch('http://localhost:8000/videos')
+      const data = await res.json()
+      
+      const categoriesMap = new Map((categories as Array<{id: number, name: string}>).map(c => [c.id, c.name]))
+      const videosWithCategory = data.map((v: Video) => ({
+        ...v,
+        category_name: categoriesMap.get(v.category_id)
+      }))
+      
+      setVideos(videosWithCategory)
+    } catch (err) {
+      console.error('Failed to fetch videos:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function toggleWatched(video: Video) {
+    try {
+      await fetch(`http://localhost:8000/videos/${video.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ watched: !video.watched })
+      })
+      setVideos((videos as Video[]).map(v => 
+        v.id === video.id ? { ...v, watched: !v.watched } : v
+      ))
+    } catch (err) {
+      console.error('Failed to toggle watched:', err)
+    }
+  }
+
+  if (loading) {
     return (
-      <div className="video-grid-empty">
-        <p>No videos found.</p>
-        <p className="empty-hint">Add your first video to get started.</p>
+      <div className="flex items-center justify-center h-64">
+        <p className="text-[rgba(4,14,32,0.69)]">Loading...</p>
+      </div>
+    )
+  }
+
+  const videoList = videos as Video[]
+
+  if (videoList.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <p className="text-[rgba(4,14,32,0.69)]">No videos yet</p>
+        <button
+          onClick={onAddVideo}
+          className="px-4 py-2 bg-[#1b61c9] text-white rounded-xl hover:bg-[#254fad] transition-colors"
+        >
+          Add Video
+        </button>
       </div>
     )
   }
 
   return (
-    <div className="video-grid">
-      {videos.map(video => (
-        <VideoCard
-          key={video.id}
-          video={video}
-          categories={categories}
-          onToggleWatched={onToggleWatched}
-          onClick={() => onVideoClick?.(video)}
-        />
-      ))}
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-medium text-[#181d26]">Videos</h2>
+        <button
+          onClick={onAddVideo}
+          className="px-4 py-2 bg-[#1b61c9] text-white rounded-xl hover:bg-[#254fad] transition-colors"
+        >
+          Add Video
+        </button>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {videoList.map((video: Video) => (
+          <div
+            key={video.id}
+            className="bg-white border border-[#e0e2e6] rounded-2xl p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="text-base font-normal text-[#181d26] line-clamp-2">
+                {video.title}
+              </h3>
+              <button
+                onClick={() => toggleWatched(video)}
+                className={`p-1 rounded transition-colors ${
+                  video.watched 
+                    ? 'text-[#1b61c9] bg-[#1b61c9]/10' 
+                    : 'text-[rgba(4,14,32,0.69)] hover:bg-gray-100'
+                }`}
+              >
+                <Check className="w-4 h-4" />
+              </button>
+            </div>
+            
+            {video.category_name && (
+              <p className="text-xs text-[rgba(4,14,32,0.69)] mb-2">
+                {video.category_name}
+              </p>
+            )}
+            
+            <a
+              href={video.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-sm text-[#1b61c9] hover:underline mb-3"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Watch
+            </a>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={() => onEditVideo(video)}
+                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 border border-[#e0e2e6] rounded-lg text-[#181d26] hover:bg-[#f8fafc] transition-colors text-sm"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                Edit
+              </button>
+              <button
+                onClick={() => onDeleteVideo(video)}
+                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

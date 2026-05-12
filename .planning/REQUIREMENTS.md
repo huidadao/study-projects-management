@@ -1,130 +1,78 @@
-# Requirements: YouTube Video Study Manager
+# Requirements: YouTube Learning Tracker
 
-**Defined:** 2026-04-10
-**Core Value:** Users can systematically organize their YouTube learning resources, track what they've watched, and schedule study sessions around video content.
+**Defined:** 2026-04-12
+**Core Value:** Track YouTube video learning progress with hierarchical category management and visual dashboard
 
 ## v1 Requirements
 
+### Category Management
+
+- [ ] **CAT-01**: User can create parent category (unique name)
+- [ ] **CAT-02**: User can create child category under parent (unique within parent)
+- [ ] **CAT-03**: User can view all categories in tree structure
+- [ ] **CAT-04**: User can expand/collapse child categories on click
+- [ ] **CAT-05**: User can edit category name
+- [ ] **CAT-06**: User can delete category (cascades to children/videos)
+
 ### Video Management
 
-- [ ] **VID-01**: User can add a video by pasting YouTube URL
-- [ ] **VID-02**: System fetches and stores video metadata (title, channel, duration, thumbnail URL, publish date)
-- [x] **VID-03**: User can view list of all saved videos in dashboard
-- [x] **VID-04**: User can edit video metadata (title, notes)
-- [x] **VID-05**: User can delete a video from the collection
-- [x] **VID-06**: User can mark video as watched/unwatched
-- [x] **VID-07**: User can open video in external YouTube player
-
-### Category System
-
-- [ ] **CAT-01**: User can create custom categories
-- [ ] **CAT-02**: User can assign major category to a video
-- [ ] **CAT-03**: User can assign minor category to a video
-- [x] **CAT-04**: User can edit category names
-- [x] **CAT-05**: User can delete categories
-- [ ] **CAT-06**: User can filter video list by category
-
-### Timestamp Notes (Mid-viewpoints)
-
-- [x] **NOTE-01**: User can add a note with timestamp to a video
-- [x] **NOTE-02**: User can view all notes for a video
-- [x] **NOTE-03**: User can edit note content and timestamp
-- [x] **NOTE-04**: User can delete a note
-- [x] **NOTE-05**: User can click note to open video at that timestamp (external player)
-
-### Search
-
-- [x] **SCH-01**: User can search videos by title
-- [x] **SCH-02**: User can search videos by channel name
-- [x] **SCH-03**: User can search notes by content
-- [x] **SCH-04**: Search results display matching videos with context
-
-### Study Schedule
-
-- [ ] **SCH-05**: User can schedule a video to watch on a specific date/time
-- [ ] **SCH-06**: User can view scheduled videos in a list
-- [ ] **SCH-07**: User can mark scheduled video as completed
-- [ ] **SCH-08**: User can reschedule a video
-- [ ] **SCH-09**: User can remove a video from schedule
+- [ ] **VID-01**: User can add YouTube video with title, URL, category association
+- [ ] **VID-02**: User can view videos in card grid format
+- [ ] **VID-03**: User can mark video as watched/unwatched
+- [ ] **VID-04**: User can edit video details
+- [ ] **VID-05**: User can delete video
 
 ### Dashboard
 
-- [x] **DASH-01**: Dashboard displays all videos with thumbnail, title, channel
-- [x] **DASH-02**: Dashboard shows video watch status (watched/unwatched)
-- [x] **DASH-03**: Dashboard shows category badges for each video
-- [ ] **DASH-04**: Dashboard shows upcoming scheduled videos
-- [x] **DASH-05**: Dashboard has quick-add form for new videos
+- [ ] **DASH-01**: User can view overall learning progress chart by category
+- [ ] **DASH-02**: User can view video cards in grid layout on dashboard
+
+### Backend API
+
+- [ ] **API-01**: CRUD endpoints for categories
+- [ ] **API-02**: CRUD endpoints for videos
+- [ ] **API-03**: GET endpoint for dashboard data
 
 ## v2 Requirements
 
-### Channel Sync
-
-- **CHAN-01**: User can add YouTube channel by URL
-- **CHAN-02**: System fetches all videos from channel
-- **CHAN-03**: User can sync new videos from subscribed channels
-
-### Export
-
-- **EXPT-01**: User can export notes as Markdown
-- **EXPT-02**: User can export video list to CSV
-
-### Advanced Search
-
-- **SRCH-05**: User can search by date range
-- **SRCH-06**: User can filter by watch status
+(No v2 requirements defined)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Real-time video playback inside app | PROJECT.md specifies opening external player |
-| Cloud sync / account requirement | Local SQLite storage only |
-| Algorithmic recommendations | Users explicitly escape YouTube algorithm |
-| Social features | Single user study tool |
-| Offline video download | Storage costs, may violate YouTube ToS |
+| User authentication | Single user, local-first |
+| Video playback (embedded) | Use YouTube directly |
+| Search/filter | Not in initial scope |
+| Data export | Not in initial scope |
+| Cloud sync | Local SQLite storage |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VID-01: Add video by URL | Phase 1 | Pending |
-| VID-02: Fetch metadata | Phase 1 | Pending |
-| VID-03: View video list | Phase 2 | Pending |
-| VID-04: Edit video metadata | Phase 2 | Pending |
-| VID-05: Delete video | Phase 2 | Pending |
-| VID-06: Mark watched/unwatched | Phase 2 | Pending |
-| VID-07: Open in external player | Phase 2 | Pending |
-| CAT-01: Create categories | Phase 1 | Pending |
-| CAT-02: Assign major category | Phase 1 | Pending |
-| CAT-03: Assign minor category | Phase 1 | Pending |
-| CAT-04: Edit category | Phase 2 | Pending |
-| CAT-05: Delete category | Phase 2 | Pending |
-| CAT-06: Filter by category | Phase 2 | Pending |
-| NOTE-01: Add timestamp note | Phase 2 | Pending |
-| NOTE-02: View notes for video | Phase 2 | Pending |
-| NOTE-03: Edit note | Phase 2 | Pending |
-| NOTE-04: Delete note | Phase 2 | Pending |
-| NOTE-05: Click note to open video | Phase 2 | Pending |
-| SCH-01: Search by title | Phase 2 | Pending |
-| SCH-02: Search by channel | Phase 2 | Pending |
-| SCH-03: Search notes | Phase 2 | Pending |
-| SCH-04: Display search results | Phase 2 | Pending |
-| SCH-05: Schedule video | Phase 3 | Pending |
-| SCH-06: View scheduled videos | Phase 3 | Pending |
-| SCH-07: Mark scheduled completed | Phase 3 | Pending |
-| SCH-08: Reschedule video | Phase 3 | Pending |
-| SCH-09: Remove from schedule | Phase 3 | Pending |
-| DASH-01: Display video list | Phase 2 | Pending |
-| DASH-02: Show watch status | Phase 2 | Pending |
-| DASH-03: Show category badges | Phase 2 | Pending |
-| DASH-04: Show scheduled videos | Phase 3 | Pending |
-| DASH-05: Quick-add form | Phase 2 | Pending |
+| CAT-01 | Phase 1 | Pending |
+| CAT-02 | Phase 1 | Pending |
+| CAT-03 | Phase 1 | Pending |
+| CAT-04 | Phase 1 | Pending |
+| CAT-05 | Phase 1 | Pending |
+| CAT-06 | Phase 1 | Pending |
+| VID-01 | Phase 2 | Pending |
+| VID-02 | Phase 2 | Pending |
+| VID-03 | Phase 2 | Pending |
+| VID-04 | Phase 2 | Pending |
+| VID-05 | Phase 2 | Pending |
+| DASH-01 | Phase 3 | Pending |
+| DASH-02 | Phase 3 | Pending |
+| API-01 | Phase 1 | Pending |
+| API-02 | Phase 2 | Pending |
+| API-03 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 33 total
-- Mapped to phases: 33
+- v1 requirements: 15 total
+- Mapped to phases: 15
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-04-10*
-*Last updated: 2026-04-10 after roadmap creation*
+*Requirements defined: 2026-04-12*
+*Last updated: 2026-04-12 after initial definition*

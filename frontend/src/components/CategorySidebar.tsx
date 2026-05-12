@@ -1,48 +1,123 @@
-import { Category } from '../store/useVideoStore'
+import { useEffect, useState } from 'react'
+import { ChevronRight, ChevronDown, Plus, Edit2, Trash2 } from 'lucide-react'
+import { useStore } from '../store'
 
-interface CategorySidebarProps {
-  categories: Category[]
-  selectedCategories: number[]
-  onToggleCategory: (id: number) => void
+interface Category {
+  id: number
+  name: string
+  parent_id: number | null
+  created_at: string
+  children?: Category[]
 }
 
-export function CategorySidebar({ categories, selectedCategories, onToggleCategory }: CategorySidebarProps) {
-  const handleClearAll = () => {
-    categories.forEach(cat => {
-      if (selectedCategories.includes(cat.id)) {
-        onToggleCategory(cat.id)
+interface CategorySidebarProps {
+  onAddCategory: () => void
+  onEditCategory: (category: Category) => void
+  onDeleteCategory: (category: Category) => void
+}
+
+export function CategorySidebar({ onAddCategory, onEditCategory, onDeleteCategory }: CategorySidebarProps) {
+  const { categories, setCategories } = useStore()
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch('http://localhost:8000/categories/tree')
+      const data = await res.json()
+      setCategories(data)
+    } catch (err) {
+      console.error('Failed to fetch categories:', err)
+    }
+  }
+
+  function toggleExpand(id: number) {
+    setExpandedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
       }
+      return next
     })
   }
 
-  return (
-    <aside className="category-sidebar">
-      <div className="sidebar-header">
-        <h3>Categories</h3>
-        {selectedCategories.length > 0 && (
-          <button className="clear-all-btn" onClick={handleClearAll}>
-            Clear
-          </button>
+  function renderCategory(category: Category, depth: number = 0): JSX.Element {
+    const hasChildren = category.children && category.children.length > 0
+    const isExpanded = expandedIds.has(category.id)
+
+    return (
+      <div key={category.id}>
+        <div
+          className="flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-[#f8fafc] transition-colors duration-150"
+          style={{ paddingLeft: `${12 + depth * 20}px` }}
+          onClick={() => hasChildren && toggleExpand(category.id)}
+        >
+          {hasChildren ? (
+            <button className="p-1 hover:bg-gray-200 rounded">
+              {isExpanded ? (
+                <ChevronDown className="w-4 h-4 text-[rgba(4,14,32,0.69)]" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-[rgba(4,14,32,0.69)]" />
+              )}
+            </button>
+          ) : (
+            <span className="w-5" />
+          )}
+          <span className="flex-1 text-[#181d26] text-base font-normal">
+            {category.name}
+          </span>
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              className="p-1 hover:bg-gray-200 rounded"
+              onClick={(e) => { e.stopPropagation(); onEditCategory(category) }}
+            >
+              <Edit2 className="w-3.5 h-3.5 text-[rgba(4,14,32,0.69)]" />
+            </button>
+            <button
+              className="p-1 hover:bg-red-100 rounded"
+              onClick={(e) => { e.stopPropagation(); onDeleteCategory(category) }}
+            >
+              <Trash2 className="w-3.5 h-3.5 text-red-600" />
+            </button>
+          </div>
+        </div>
+        {hasChildren && isExpanded && (
+          <div>
+            {category.children?.map(child => renderCategory(child, depth + 1))}
+          </div>
         )}
       </div>
-      
-      <div className="category-list">
-        {categories.length === 0 ? (
-          <p className="empty-categories">No categories yet.</p>
-        ) : (
-          categories.map(category => (
-            <label key={category.id} className="category-checkbox">
-              <input
-                type="checkbox"
-                checked={selectedCategories.includes(category.id)}
-                onChange={() => onToggleCategory(category.id)}
-              />
-              <span className="category-label">
-                {category.name}
-                <span className="category-type">({category.category_type})</span>
-              </span>
-            </label>
-          ))
+    )
+  }
+
+  const rootCategories = categories as Category[]
+
+  return (
+    <aside className="w-64 h-screen border-r border-[#e0e2e6] flex flex-col bg-white">
+      <div className="flex items-center justify-between p-4 border-b border-[#e0e2e6]">
+        <h2 className="text-lg font-medium text-[#181d26]">Categories</h2>
+        <button
+          className="p-1.5 hover:bg-[#f8fafc] rounded-md transition-colors"
+          onClick={onAddCategory}
+        >
+          <Plus className="w-5 h-5 text-[#1b61c9]" />
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto py-2">
+        {rootCategories.map(cat => (
+          <div key={cat.id} className="group">
+            {renderCategory(cat)}
+          </div>
+        ))}
+        {rootCategories.length === 0 && (
+          <p className="px-4 py-2 text-[rgba(4,14,32,0.69)] text-sm">
+            No categories yet
+          </p>
         )}
       </div>
     </aside>

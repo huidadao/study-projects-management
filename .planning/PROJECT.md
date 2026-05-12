@@ -1,78 +1,71 @@
-# YouTube Video Study Manager
-
-## What This Is
-
-A web + mobile application for tracking YouTube videos and managing study schedules based on video viewing. Users can organize videos by custom categories (major/minor), add timestamp notes at specific points, schedule watch times, and track progress. Data stored locally in SQLite.
+# Project: YouTube Learning Tracker
 
 ## Core Value
 
-Users can systematically organize their YouTube learning resources, track what they've watched, and schedule study sessions around video content.
-
-## Requirements
-
-### Validated
-
-(None yet — ship to validate)
-
-### Active
-
-- [ ] Track YouTube videos (manual entry + channel sync)
-- [ ] Classify videos by custom major/minor categories
-- [ ] Add timestamp notes ("mid-viewpoints")
-- [ ] Search videos in collection
-- [ ] Edit video metadata and notes history
-- [ ] Dashboard with video list and collection management
-- [ ] Study schedule: plan watch times + track progress
-
-### Out of Scope
-
-- [Real-time YouTube streaming/playback] — Opens external player
-- [Social features] — Single user app
-- [Cloud sync] — Local SQLite only
-- [Offline video download] — Play from YouTube directly
+Track YouTube video learning progress with hierarchical category management and visual dashboard.
 
 ## Context
 
-- User wants to organize learning videos from YouTube
-- Backend (FastAPI) + Frontend (React) architecture
-- Need both web and mobile access
+- **Purpose**: Track YouTube learning videos by category tree structure
+- **Users**: Individual learner tracking self-study from YouTube
+- **Current State**: Greenfield — no existing codebase
 
-## Architecture
+## Features
 
-- **Backend**: FastAPI (Python) in /backend directory
-- **Frontend**: React 19 + Vite + TypeScript in /frontend directory
-- **Storage**: SQLite database (via backend API)
+### Required Capabilities
 
-## Constraints
+1. **Category Tree Management**
+   - Parent categories (unique names)
+   - Child categories (unique within parent)
+   - Tree UI: expand/collapse child categories on click
+   - Full CRUD for categories
 
-- **Platform**: Web app + mobile-friendly (responsive/PWA)
-- **Data Source**: Manual URL entry + YouTube channel sync
+2. **Video Tracking**
+   - Store YouTube video metadata (title, URL, watched status)
+   - Associate videos with categories
+   - Display videos in card grid format
+
+3. **Dashboard**
+   - Category-wise learning progress chart
+   - Video cards in grid layout
+   - Overall progress visualization
+
+### Technical Stack
+
+- **Backend**: FastAPI + SQLite + SQLModel
+- **Frontend**: React + Vite + TypeScript + Tailwind CSS + Zustand
+- **Icons**: Lucide React
+
+---
+
+## Requirements
+
+### Active
+
+- [ ] Category tree with parent/child structure
+- [ ] Expandable/collapsible tree UI
+- [ ] Category CRUD
+- [ ] Video CRUD with category association
+- [ ] Dashboard with progress chart
+- [ ] Video card grid display
+
+### Out of Scope
+
+- [ ] User authentication
+- [ ] Video playback (embedded)
+- [ ] Search/filter functionality
+- [ ] Data export
+
+---
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| FastAPI backend | Python web API with SQLite | — Pending |
-| React frontend | User preference | — Pending |
-| Separate /backend and /frontend | Clear separation of concerns | — Pending |
-| Custom categories | User-defined major/minor | — Pending |
+| SQLite | Single user, local-first | Pending |
+| Zustand | Lightweight state | Pending |
+| Tree UI | Natural category hierarchy | Pending |
 
 ---
-*Last updated: 2026-04-10 after initialization*
 
-## Evolution
-
-This document evolves at phase transitions and milestone boundaries.
-
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+*Last updated: 2026-04-12 after initialization*
