@@ -8,6 +8,7 @@ import { VideoModal } from './components/VideoModal'
 import { Dashboard } from './components/Dashboard'
 import { ToastContainer } from './components/Toast'
 import { api } from './lib/api'
+import { useStore } from './store'
 import { useToastStore } from './store/toast'
 import type { Category, Video } from './types'
 
@@ -17,11 +18,15 @@ function App() {
   const [showVideoModal, setShowVideoModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteType, setDeleteType] = useState<'category' | 'video'>('category')
+  const [refreshCategories, setRefreshCategories] = useState(0)
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
 
   const showToast = useToastStore((s) => s.showToast)
+  const removeCategory = useStore((s) => s.removeCategory)
+  const removeVideo = useStore((s) => s.removeVideo)
+  const setSelectedCategoryId = useStore((s) => s.setSelectedCategoryId)
 
   function handleAddCategory() {
     setSelectedCategory(null)
@@ -55,13 +60,22 @@ function App() {
     setShowDeleteConfirm(true)
   }
 
+  function triggerRefresh() {
+    setRefreshCategories((k) => k + 1)
+  }
+
   async function confirmDelete() {
     try {
       if (deleteType === 'category' && selectedCategory) {
         await api.deleteCategory(selectedCategory.id)
+        removeCategory(selectedCategory.id)
+        // If the deleted category was selected, clear selection
+        setSelectedCategoryId(null)
         showToast(`Category "${selectedCategory.name}" deleted`, 'success')
+        triggerRefresh()
       } else if (deleteType === 'video' && selectedVideo) {
         await api.deleteVideo(selectedVideo.id)
+        removeVideo(selectedVideo.id)
         showToast(`Video "${selectedVideo.title}" deleted`, 'success')
       }
     } catch (err) {
@@ -78,6 +92,7 @@ function App() {
   return (
     <div className="flex min-h-screen bg-white">
       <CategorySidebar
+        refreshKey={refreshCategories}
         onAddCategory={handleAddCategory}
         onEditCategory={handleEditCategory}
         onDeleteCategory={handleDeleteCategory}
@@ -116,6 +131,7 @@ function App() {
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         category={selectedCategory}
+        onSuccess={triggerRefresh}
       />
 
       <VideoModal

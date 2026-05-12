@@ -30,6 +30,7 @@ export function VideoModal({ isOpen, onClose, video }: VideoModalProps) {
     } else {
       setTitle('')
       setUrl('')
+      // Default to first category, or 0 if none
       setCategoryId(categories.length > 0 ? categories[0].id : 0)
     }
     setError('')

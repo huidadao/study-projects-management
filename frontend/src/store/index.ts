@@ -4,8 +4,10 @@ import type { Category, Video } from '../types'
 interface AppState {
   categories: Category[]
   videos: Video[]
+  selectedCategoryId: number | null
   setCategories: (categories: Category[]) => void
   setVideos: (videos: Video[]) => void
+  setSelectedCategoryId: (id: number | null) => void
   addCategory: (category: Category) => void
   updateCategory: (category: Category) => void
   removeCategory: (id: number) => void
@@ -17,9 +19,11 @@ interface AppState {
 export const useStore = create<AppState>((set) => ({
   categories: [],
   videos: [],
+  selectedCategoryId: null,
 
   setCategories: (categories) => set({ categories }),
   setVideos: (videos) => set({ videos }),
+  setSelectedCategoryId: (id) => set({ selectedCategoryId: id }),
 
   addCategory: (category) =>
     set((state) => ({ categories: [...state.categories, category] })),

@@ -12,17 +12,18 @@ interface VideoGridProps {
 }
 
 export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridProps) {
-  const { videos, setVideos, categories } = useStore()
+  const { videos, setVideos, categories, selectedCategoryId } = useStore()
   const [loading, setLoading] = useState(true)
   const showToast = useToastStore((s) => s.showToast)
 
   useEffect(() => {
     fetchVideos()
-  }, [])
+  }, [selectedCategoryId])
 
   async function fetchVideos() {
+    setLoading(true)
     try {
-      const data = await api.getVideos()
+      const data = await api.getVideos(selectedCategoryId ?? undefined)
       const categoriesMap = new Map(categories.map((c) => [c.id, c.name]))
       const videosWithCategory = data.map((v) => ({
         ...v,
@@ -52,18 +53,22 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
     }
   }
 
+  const displayVideos = videos
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-[rgba(4,14,32,0.69)]">Loading...</p>
+        <p className="text-[rgba(4,14,32,0.69)]">Loading videos...</p>
       </div>
     )
   }
 
-  if (videos.length === 0) {
+  if (displayVideos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <p className="text-[rgba(4,14,32,0.69)]">No videos yet</p>
+        <p className="text-[rgba(4,14,32,0.69)]">
+          {selectedCategoryId ? 'No videos in this category' : 'No videos yet'}
+        </p>
         <button
           onClick={onAddVideo}
           className="px-4 py-2 bg-[#1b61c9] text-white rounded-xl hover:bg-[#254fad] transition-colors"
@@ -77,7 +82,11 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-medium text-[#181d26]">Videos</h2>
+        <h2 className="text-xl font-medium text-[#181d26]">
+          {selectedCategoryId
+            ? categories.find((c) => c.id === selectedCategoryId)?.name || 'Videos'
+            : 'All Videos'}
+        </h2>
         <button
           onClick={onAddVideo}
           className="px-4 py-2 bg-[#1b61c9] text-white rounded-xl hover:bg-[#254fad] transition-colors"
@@ -87,7 +96,7 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {videos.map((video) => (
+        {displayVideos.map((video) => (
           <div
             key={video.id}
             className="bg-white border border-[#e0e2e6] rounded-2xl p-4 hover:shadow-md transition-shadow"

@@ -9,9 +9,10 @@ interface CategoryModalProps {
   isOpen: boolean
   onClose: () => void
   category?: Category | null
+  onSuccess?: () => void
 }
 
-export function CategoryModal({ isOpen, onClose, category }: CategoryModalProps) {
+export function CategoryModal({ isOpen, onClose, category, onSuccess }: CategoryModalProps) {
   const categories = useStore((state) => state.categories)
   const addCategory = useStore((state) => state.addCategory)
   const updateCategoryInStore = useStore((state) => state.updateCategory)
@@ -66,6 +67,7 @@ export function CategoryModal({ isOpen, onClose, category }: CategoryModalProps)
         showToast('Category created successfully', 'success')
       }
 
+      onSuccess?.()
       onClose()
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'An error occurred'
