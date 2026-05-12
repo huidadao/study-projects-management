@@ -5,9 +5,18 @@ from routers import categories, videos, dashboard
 
 app = FastAPI()
 
+# Allow origins: local dev + Vercel production + Vercel preview deployments
+origins = [
+    "http://localhost:5173",
+    "https://localhost:5173",
+]
+
+# If you have a specific Vercel domain, add it here after first deploy:
+# origins.append("https://your-project.vercel.app")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
