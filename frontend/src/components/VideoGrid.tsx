@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Check, Edit2, Trash2, ExternalLink } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
+import { Check, Edit2, Trash2, Play } from 'lucide-react'
 import { useStore } from '../store'
 import { api } from '../lib/api'
 import { useToastStore } from '../store/toast'
+import { getYouTubeVideoId, getYouTubeThumbnailUrl } from '../lib/youtube'
 import type { Video } from '../types'
 
 interface VideoGridProps {
@@ -11,16 +12,62 @@ interface VideoGridProps {
   onDeleteVideo: (video: Video) => void
 }
 
+function VideoThumbnail({ url, title, watched }: { url: string; title: string; watched: boolean }) {
+  const [imgError, setImgError] = useState(false)
+  const videoId = getYouTubeVideoId(url)
+  const thumbnailUrl = videoId
+    ? getYouTubeThumbnailUrl(videoId, 'hq')
+    : null
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative block w-full aspect-video rounded-xl overflow-hidden group cursor-pointer bg-gray-900"
+      title={title}
+    >
+      {thumbnailUrl && !imgError ? (
+        <img
+          src={thumbnailUrl}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={() => setImgError(true)}
+          loading="lazy"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-gray-800">
+          <Play className="w-12 h-12 text-white/60" />
+        </div>
+      )}
+
+      {/* Dark overlay on hover */}
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
+
+      {/* Play button on hover */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+          <Play className="w-6 h-6 text-red-600 ml-0.5" fill="currentColor" />
+        </div>
+      </div>
+
+      {/* Watched badge */}
+      {watched && (
+        <div className="absolute top-2 right-2 bg-[#1b61c9] text-white text-xs font-medium px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm">
+          <Check className="w-3 h-3" />
+          Watched
+        </div>
+      )}
+    </a>
+  )
+}
+
 export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridProps) {
   const { videos, setVideos, categories, selectedCategoryId } = useStore()
   const [loading, setLoading] = useState(true)
   const showToast = useToastStore((s) => s.showToast)
 
-  useEffect(() => {
-    fetchVideos()
-  }, [selectedCategoryId])
-
-  async function fetchVideos() {
+  const fetchVideos = useCallback(async () => {
     setLoading(true)
     try {
       const data = await api.getVideos(selectedCategoryId ?? undefined)
@@ -37,7 +84,11 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategoryId, categories, setVideos, showToast])
+
+  useEffect(() => {
+    fetchVideos()
+  }, [fetchVideos])
 
   async function toggleWatched(video: Video) {
     try {
@@ -99,55 +150,60 @@ export function VideoGrid({ onAddVideo, onEditVideo, onDeleteVideo }: VideoGridP
         {displayVideos.map((video) => (
           <div
             key={video.id}
-            className="bg-white border border-[#e0e2e6] rounded-2xl p-4 hover:shadow-md transition-shadow"
+            className="bg-white border border-[#e0e2e6] rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-200"
           >
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="text-base font-normal text-[#181d26] line-clamp-2">
-                {video.title}
-              </h3>
-              <button
-                onClick={() => toggleWatched(video)}
-                className={`p-1 rounded transition-colors ${
-                  video.watched
-                    ? 'text-[#1b61c9] bg-[#1b61c9]/10'
-                    : 'text-[rgba(4,14,32,0.69)] hover:bg-gray-100'
-                }`}
-              >
-                <Check className="w-4 h-4" />
-              </button>
-            </div>
+            {/* Thumbnail */}
+            <VideoThumbnail
+              url={video.url}
+              title={video.title}
+              watched={video.watched}
+            />
 
-            {video.category_name && (
-              <p className="text-xs text-[rgba(4,14,32,0.69)] mb-2">
-                {video.category_name}
-              </p>
-            )}
+            {/* Info */}
+            <div className="p-3">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <h3
+                  className="text-sm font-medium text-[#181d26] line-clamp-2 flex-1"
+                  title={video.title}
+                >
+                  {video.title}
+                </h3>
+                <button
+                  onClick={() => toggleWatched(video)}
+                  className={`shrink-0 p-1 rounded transition-colors ${
+                    video.watched
+                      ? 'text-[#1b61c9] bg-[#1b61c9]/10'
+                      : 'text-[rgba(4,14,32,0.3)] hover:bg-gray-100'
+                  }`}
+                  title={video.watched ? 'Mark as unwatched' : 'Mark as watched'}
+                >
+                  <Check className="w-4 h-4" />
+                </button>
+              </div>
 
-            <a
-              href={video.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm text-[#1b61c9] hover:underline mb-3"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Watch
-            </a>
+              {video.category_name && (
+                <p className="text-xs text-[rgba(4,14,32,0.5)] mb-2">
+                  {video.category_name}
+                </p>
+              )}
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => onEditVideo(video)}
-                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 border border-[#e0e2e6] rounded-lg text-[#181d26] hover:bg-[#f8fafc] transition-colors text-sm"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                Edit
-              </button>
-              <button
-                onClick={() => onDeleteVideo(video)}
-                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Delete
-              </button>
+              {/* Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onEditVideo(video)}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 border border-[#e0e2e6] rounded-lg text-[#181d26] hover:bg-[#f8fafc] transition-colors text-xs"
+                >
+                  <Edit2 className="w-3 h-3" />
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDeleteVideo(video)}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-xs"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
